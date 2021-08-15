@@ -1,0 +1,26 @@
+<p>
+   &emsp;&ensp; 
+   A grayscale image can be represented as a <b>M x N matrix</b> of pixels. 
+   To adapt our problem to ACO, we represent our image as a graph where pixels
+   are nodes connected to adjacent pixels.
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/imageGraph.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   This configuration is quite similar to TSP. However, TSP graph was fully 
+   connected while our image is represented as <b>partially connected 
+   graph</b>: an ant can only travel from one pixel to a direct neighbour.
+</p>
+
+<p>
+   &emsp;&ensp; 
+   In TSP, a solution was evaluated according to its length (the shorter, 
+   the better). Here, we substitute the length by a heuristic information 
+   derived from the <b>intensity variation</b> (the higher the better) along 
+   a given path. 
+</p>
+
