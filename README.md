@@ -9,7 +9,7 @@ This project was realised for a dissertation for the degree of MSc. Artificial I
 
 This software is accessible as a web app at this address: https://emilietavernier.github.io/MSc_ACO_Project/#/<br/>
 The desktop version (windows only) is contained in the folder "aco_windows_release" (run the executable file .exe to launch the app). <br/>
-For better performance, the desktop version is advised.<br/>
+For better performance, the <b>desktop version is advised</b>.<br/>
 
 ## Setting up the development environment
 
