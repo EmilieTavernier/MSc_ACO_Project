@@ -21,6 +21,9 @@ Here is the set up I used for my development environment:
 - Create a new flutter project (check web platform box)
 - For desktop development, use in terminal:
     $ flutter config --enable-windows-desktop
+    
     $ flutter config --enable-macos-desktop
+    
     $ flutter config --enable-linux-desktop
+    
 - For Web, Chrome or Edge are the default supported browser
