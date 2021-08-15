@@ -23,4 +23,4 @@ Here is the set up I used for my development environment:
     $ flutter config --enable-windows-desktop<br/>
     $ flutter config --enable-macos-desktop<br/>
     $ flutter config --enable-linux-desktop<br/>
-- For Web, Chrome or Edge are the default supported browser
+- For web, Chrome or Edge are the default supported browser
