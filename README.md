@@ -1,16 +1,26 @@
-# aco_project_r4
+# Ant Colony Optimisation Demonstration Software
 
-A new Flutter project.
+Author: Emilie Tavernier
+
+The Ant Colony Optimisation (ACO) demonstration software is an educational tool demonstrating ACO algorithms usage in a variety of problems (traveling salesman problem, job scheduling and edge detection).
+This project was realised for a dissertation for the degree of MSc. Artificial Intelligence at Heriot Watt University (Scotland)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This software is accessible as a web app at this address: https://emilietavernier.github.io/MSc_ACO_Project/#/
+The desktop version (windows only) is contained in the folder "aco_windows_release" (run the executable file .exe to launch the app). 
+For better performance, the desktop version is advised.
 
-A few resources to get you started if this is your first Flutter project:
+## Setting up the development environment
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This is an open-source project. You are free to copy the code and expand on it. 
+Here is the set up I used for my development environment:
+- Install IntelliJ IDE
+- Install Flutter SDK
+- In IntelliJ, install Dart and Flutter plugins
+- Create a new flutter project (check web platform box)
+- For desktop development, use in terminal:
+    $ flutter config --enable-windows-desktop
+    $ flutter config --enable-macos-desktop
+    $ flutter config --enable-linux-desktop
+- For Web, Chrome or Edge are the default supported browser
