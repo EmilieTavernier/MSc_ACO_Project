@@ -1,0 +1,94 @@
+<p>
+   &emsp;&ensp; 
+   Ant Colony System (ACS) was initially proposed to solve TSP but can be 
+   adapt to edge detection with a few tweaks.
+</p>
+
+<p>
+   &emsp;&ensp; 
+   As for TSP initialisation, each ant is positioned on a <b>random</b> 
+   pixel at the beginning of the first iteration. However, a first 
+   difference is that the graph representing an image is far bigger 
+   than the one for TSP. Hence, we stop an iteration after a <b>pre-define 
+   number of construction steps</b> rather than after the ants visited 
+   all nodes.
+</p>
+
+<p>
+   &emsp;&ensp; 
+   For edge detection, evaluating a path by its length does not make 
+   much sense. Instead, of the distance between nodes, we will thus 
+   rely on statistics about the <b>intensity variation</b> around a pixel 
+   to choose the next destination.
+</p>
+
+<p>
+   &emsp;&ensp; 
+   To this purpose, we define the heuristic information at pixel (i,j) as:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/ACSimgPrHeuristic.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   With I<sub>i,j</sub> the intensity of pixel (i,j). V<sub>c</sub> is a 
+   function computing the intensity variation based on pixel (i,j)’s 
+   neighbours:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/ACSimgPrIntensityVariation.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   And the normalization factor V<sub>max</sub> which design the maximum 
+   intensity variation for the image.
+</p>
+
+<p>
+   &emsp;&ensp; 
+   This heuristic information we just defined appears in the formula to 
+   choose the next destination for construction step n:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/ACSimgPrProba.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   <b>&#945;</b> and <b>&#946;</b> are parameters to control the weight of 
+   pheromone and the heuristic information. During the destination selection, 
+   a greater <b>&#945;</b> means that pixels with <b>lot of pheromones</b> 
+   will be favoured, while a greater <b>&#946;</b> will privilege pixels 
+   with a <b>high intensity variation</b> around.
+</p>
+   
+<p>
+   &emsp;&ensp; 
+   Finally, we remind that ACS uses two kind of pheromone updates.  
+   The <b>local update</b> involving a <b>pheromone decay</b> coefficient:   
+</p>
+   
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/ACSimgPrLocalUpdate.PNG'/>
+</div>
+   
+<p>
+   &emsp;&ensp; 
+   And the <b>offline update</b> involving a <b>pheromone evaporation</b>
+   rate:   
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/ACSimgPrOfflineUpdate.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   Note that contrary to ACS for TSP solving, the offline update is here 
+   <b>performed by all ants</b> like the local update.
+</p>
