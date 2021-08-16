@@ -7,6 +7,7 @@ import 'package:flutter/animation.dart';
 import '../appStaticData.dart';
 import "Painters.dart";
 
+// Class defining animation for ants movements
 class AnimatedItemWidget extends AnimatedWidget {
   AnimatedItemWidget({Key? key,
     required Animation<double> animation,
@@ -33,8 +34,10 @@ class AnimatedItemWidget extends AnimatedWidget {
       var radius = 10.0;
       //var adjustment =  y < targetedY ? - radius : radius;
       var adjustment = 0.0;
+      // If x,y correspond to departure tasks... 
       if( x == jsp.jobs[0].tasks[0].coordinates.x &&
           y == jsp.jobs[0].tasks[0].coordinates.y ){
+        // ... We need a small adjustements to follow graph edges
         adjustment = -radius;
       }
 
