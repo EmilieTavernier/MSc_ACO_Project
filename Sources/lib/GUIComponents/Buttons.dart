@@ -4,9 +4,10 @@ import "../appStaticData.dart";
 import "PopUp.dart";
 
 //***************************************************************
-// Help Button
+// Help Button (round "?")
 //***************************************************************
 
+// Usual help button (green round "?")
 class HelpButton extends StatelessWidget {
   HelpButton({
     Key? key,
@@ -33,6 +34,7 @@ class HelpButton extends StatelessWidget {
   }
 }
 
+// Appbar help button (white round "?")
 class IconHelpButton extends StatelessWidget {
   IconHelpButton({
     Key? key,
@@ -58,6 +60,7 @@ class IconHelpButton extends StatelessWidget {
   }
 }
 
+// Button in help panels top right corner (list icone)
 class IconHomeButton extends StatelessWidget {
   IconHomeButton({
     Key? key,
@@ -80,6 +83,7 @@ class IconHomeButton extends StatelessWidget {
   }
 }
 
+// Button in help panels top right corner ("?" bubble icone)
 class IconCreditButton extends StatelessWidget {
   IconCreditButton({
     Key? key,
@@ -142,6 +146,7 @@ class RectangularButton extends StatelessWidget {
 // 'See Also' Button
 //***************************************************************
 
+// Buttons at the bottom of help panels in the section "see also"
 class RectangularHelpButton extends StatelessWidget {
   RectangularHelpButton({
     Key? key, required this.label, required this.attachedHelp,
@@ -172,6 +177,7 @@ class RectangularHelpButton extends StatelessWidget {
 // Control Button (play, pause, start)
 //***************************************************************
 
+// Control bar buttons under the demonstration area (STOP, PAUSE, PLAY)
 class ControlButton extends StatelessWidget {
   const ControlButton({
     Key? key, required this.icon,
@@ -213,7 +219,7 @@ class ControlButton extends StatelessWidget {
   }
 }
 
-
+// Control bar speed control dropdown (under the demonstration area)
 class ControlDropDown extends StatefulWidget {
   ControlDropDown({
     Key? key,
