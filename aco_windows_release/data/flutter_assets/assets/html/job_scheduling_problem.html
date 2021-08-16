@@ -1,0 +1,53 @@
+<p>
+   &emsp;&ensp; 
+   The job scheduling problem (JSP) is a common problem in computer science. 
+   Several variants exist with more or less constraints but the main idea is 
+   as follows: 
+</p>
+
+<p>
+   &emsp;&ensp; 
+   A set of jobs needs to be executed. Each job is composed of a set of tasks 
+   of varying duration which needs to be performed in a specific order 
+   (<b>precedence constraint</b>). Tasks from the same job can only be executed 
+   one at a time on a specific machine from a given set (resources). The goal 
+   is to <b>minimize the makespan</b>, that is the time to complete the 
+   whole process from start to end.
+</p>
+
+<p>
+   Example:
+</p>
+
+<p>
+   Let’s consider a set of three jobs composed of two to three tasks. 
+   A task is described by the machine it needs to be executed on, and 
+   its duration as follow: <b>(machine, duration)</b>. 
+</p>
+
+<p>
+   Given the following jobs:
+</p>
+
+<ul>
+   <li>
+      job 0 = [(0,3), (1,2), (2, 2)]
+   </li> 
+   <li>
+      job 1 = [(0,2), (2,1), (1, 4)]
+   </li> 
+   <li>
+      job 2 = [(1,4), (2,3)]
+   </li> 
+</ul>
+
+<p>
+   &emsp;&ensp; 
+   The next two schedules for machines M0, M1 and M2 are both feasible but 
+   the second one having a shorter makespan is the best option.
+</p>
+
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/schedules.PNG'/>
+</div>

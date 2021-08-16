@@ -1,0 +1,48 @@
+<p>
+   &emsp;&ensp;
+   Max-Min Ant System (MMAS) is a variant of ACO algorithms proposed by Thomas
+   Stützle and Holger H. Hoos. It aims to enhance ACO performances thanks
+   to a stronger exploitation of the best solution known. The algorithm
+   structure is the same as AS. However, MMAS will differs in three points:
+</p>
+<ul>
+   <li>
+      Only the <b>best ant</b> will perform the pheromone update.
+      Best ant can be defined as the iteration best or the global
+      best (best from the beginning).
+   </li>
+   <li>
+      Pheromone concentration is <b>bounded</b> ([&#964;<sub>min</sub>;
+      &#964;<sub>max</sub>]) to limit stagnation.
+   </li>
+   <li>
+      The initial value of pheromones is set to <b>&#964;<sub>max</sub></b>,
+      to encourage exploration at the beginning of the algorithm.
+   </li>
+</ul>
+<p>
+   &emsp;&ensp;
+   This translates in the pheromone update equation as:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/mmasUpdate.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp;
+   With the bounding operator define as:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/mmasOperator.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp;
+   And the quantity of added pheromone computed as:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/mmasDelta.PNG'/>
+</div>

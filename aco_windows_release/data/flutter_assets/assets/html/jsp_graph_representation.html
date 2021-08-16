@@ -1,0 +1,71 @@
+<p>
+   &emsp;&ensp; 
+   Let’s consider a set of three jobs composed of two to three tasks. A task 
+   is described by the machine it needs to be executed on, and its duration 
+   as follow: <b>(machine, duration)</b>. 
+</p>
+
+<ul>
+   <li>
+      job 0 = [(0,3), (1,2), (2, 2)]
+   </li> 
+   <li>
+      job 1 = [(0,2), (2,1), (1, 4)]
+   </li> 
+   <li>
+      job 2 = [(1,4), (2,3)]
+   </li> 
+</ul>
+
+<p>
+   &emsp;&ensp; 
+   This problem can be represented as a graph suitable to ACO. Each job 
+   is represented as a set of nodes corresponding to its composing tasks. 
+   Tasks from the same job must be executed in a given order (<b>precedence 
+   constraint</b>) so we connect them unidirectionally. Tasks form different 
+   jobs are all connected bidirectionally. We add a starting node to serve as 
+   departure point for all ants. 
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/JSPgraph.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   An ant constructs a solution by <b>visiting all nodes exactly once</b>. 
+   To respect the precedence constraint, the ant cannot visit a node if 
+   its same job predecessors haven’t been visited. For instance, the ant 
+   cannot go to job 3 task (2,3) before job 3 task (1,4). 
+</p>
+
+<p>
+   &emsp;&ensp; 
+   After completing a solution, we can translate it to an actual schedule 
+   by respecting the order of the execution of tasks (order in which they 
+   were visited) on their respective machine. 
+</p>
+
+<p>
+   &emsp;&ensp; 
+   Here is a complete solution:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/JSPgraphPath.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   And the corresponding schedule:
+</p>
+
+<div style="text-align: center;">
+   <image alt='image not found' src='asset:assets/images/JSPgraphSchedule.PNG'/>
+</div>
+
+<p>
+   &emsp;&ensp; 
+   A solution is evaluated based on the <b>makespan</b> of the corresponding 
+   schedule (the shorter, the better).
+</p>
