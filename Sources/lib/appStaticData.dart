@@ -14,6 +14,7 @@ import 'ProblemsDefinition/EdgeDetection.dart';
 // STATE RELATED DATA
 // ********************************************************************
 
+// Problem and algorithm definition placeholders
 TSP tsp = new TSP(nbCities: 0);
 ACO aco = new ACO(0, 0, 0, 0, 0, 0, 0, null, null, null, null);
 JSP jsp = new JSP([]);
@@ -21,6 +22,7 @@ EdgeDetection edgeDetection = new EdgeDetection();
 EdgeDetectionACO edgeDetectionACO = new EdgeDetectionACO(0, 0, 0, 0, 0, 0, 0, 0);
 JobSchedulingACO jobSchedulingACO = new JobSchedulingACO(0, 0, 0, 0, 0, 0, 0);
 
+// Animation variables
 late Animation<double> animation;
 late AnimationController controller;
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -28,7 +30,9 @@ final navigatorKey = GlobalKey<NavigatorState>();
 List<Widget> jobsField = [];
 var jobsCtrl = [];
 
+// Class holding the state of the application
 class AppState{
+  // Value notifiers listened by GUI components (notifiers triggered GUI update on value change)
   static final ValueNotifier<int> tspNotifier = ValueNotifier<int>(0);
   static final ValueNotifier<int> imageChangeNotifier = ValueNotifier<int>(0);
   static final ValueNotifier<int> pheromonesNotifier = ValueNotifier<int>(0);
@@ -42,6 +46,7 @@ class AppState{
   static final ValueNotifier<int> visualNotifier = ValueNotifier<int>(0);
   static final ValueNotifier<int> helpNotifier = ValueNotifier<int>(0);
 
+  // User selected options
   static Algorithm? selectedAlgo = Algorithm.AS; // O AS, 1 MMAS, 2 ACS
   static Problem? selectedProblem = Problem.TSP; // O TSP, 1 JSP, 3 Edge Detection
   static BestAnt? selectedBest = BestAnt.globalBest;
@@ -51,9 +56,11 @@ class AppState{
 
   static var currentHelp = AppData.helpACO;
 
+  // Text display in GUI information area (instruction to launch a demonstration, execution advancement, best path length...)
   static String executionInfo = 'Press the button Generate in the section "Problem parameters" and then the button Start in "Algorithm selection" to launch a demonstration.';
   static String additionalInfo = '';
 
+  // Demonstration status variables and functions
   static bool performingACO = false;
   static bool animating = false;
   static bool abort = false;
@@ -63,7 +70,8 @@ class AppState{
   static int pauseDuration = 0;
 
   static int speedInMs = 2000;
-
+  
+  // This method aborts a demonstration
   static void stop(){
     controller.stop();
     if(performingACO) abort = true;
@@ -79,6 +87,7 @@ class AppState{
     updateExecutionInfo();
   }
 
+  // This method displays a warning message if the demonstration is abort because computation value are out of range (infinity)
   static void overflow(){
     stop();
     showDialog<String>(
@@ -87,6 +96,7 @@ class AppState{
     );
   }
 
+  // This method pauses a demonstration
   static void pause(){
     if(performingACO){
       pauseStartTime = DateTime.now().millisecondsSinceEpoch;
@@ -97,6 +107,7 @@ class AppState{
     }
   }
 
+  // This method resumes a demonstration
   static void play(){
     if(performingACO && paused){
       pauseDuration += DateTime.now().millisecondsSinceEpoch - pauseStartTime;
@@ -107,32 +118,35 @@ class AppState{
     }
   }
 
+  // This method initialise the current selected problem (accept user input parameters for TSP or JSP)
   static void generateProblem({nbCities, jobsDescription}){
     executionInfo = 'Press the button Start in the section "Algorithm selection" to launch a demonstration';
     additionalInfo = '';
     updateExecutionInfo();
 
-    // Reinitialised ACO related data and update GUI
+    // Clean up ACO related data
     tsp = new TSP(nbCities: 0);
     aco = new ACO(0, 0, 0, 0, 0, 0, 0, null, null, null, null);
     aco.pheromoneConcentrations = [];
     edgeDetectionACO = new EdgeDetectionACO(0, 0, 0, 0, 0, 0, 0, 0);
     jobSchedulingACO = new JobSchedulingACO(0, 0, 0, 0, 0, 0, 0);
 
+    // initialized selected problem with user input parameters and update animation duration
     if(selectedProblem == Problem.TSP) {
       tsp = new TSP(nbCities: nbCities);
-      controller.duration = Duration(milliseconds: AppState.speedInMs);
+      controller.duration = Duration(milliseconds: AppState.speedInMs); // animation duration for TSP
     }
     else if(selectedProblem == Problem.edgeDetection) {
       edgeDetection = new EdgeDetection();
-      controller.duration = const Duration(seconds: 0);
+      controller.duration = const Duration(seconds: 0); // No animation for edge detection (instantaneous ants change of position)
     }
     else if(selectedProblem == Problem.JSP){
       jsp = new JSP(jobsDescription);
-      controller.duration = Duration(milliseconds: AppState.speedInMs);
+      controller.duration = Duration(milliseconds: AppState.speedInMs); // animation duration for TSP
     }
-    tspNotifier.value = (AppState.tspNotifier.value + 1) % 2;
 
+    // Update GUI
+    tspNotifier.value = (AppState.tspNotifier.value + 1) % 2; 
     updatePheromones();
     updateAnimation();
     updateVisual();
@@ -148,6 +162,7 @@ class AppState{
     tsp = new TSP(nbCities: nbCities);
   }
 
+  // this method start a new demonstration with user input parameters (default values are defined in form.dart)
   static void launchDemonstration( int nbAnts, int nbIterations, int nbConstructionSteps,
                                    var pheromoneInitValue,
                                    var evaporationRate, var alpha, var beta, var Q,
@@ -163,34 +178,42 @@ class AppState{
     updatePheromones();
     updateAnimation();
 
-    // Launch new ACO algorithm
-    if(selectedProblem == Problem.TSP){
+    // Launch selected ACO algorithm for selected problem
+    if(selectedProblem == Problem.TSP){ // TSP
       if (tsp.cities.length <= 1) return;
+      // Initialise ACO with user input parameters
       aco = new ACO(
           nbAnts, nbIterations, pheromoneInitValue, evaporationRate, alpha, beta, Q,
           maxPheromone, minPheromone,
           pheromoneDecay, q0
       );
-      aco.performAntSystem();
+      aco.performAntSystem(); //Launch ACO 
     }
-    else if (selectedProblem == Problem.edgeDetection){
+    else if (selectedProblem == Problem.edgeDetection){ // Edge Detection
       if(edgeDetection.pixels.isEmpty) return;
+        // Initialise ACO with user input parameters
       edgeDetectionACO = new EdgeDetectionACO(
         nbAnts, nbIterations, nbConstructionSteps, pheromoneInitValue,
         alpha, beta, evaporationRate, pheromoneDecay
       );
-      edgeDetectionACO.performACS();
+      edgeDetectionACO.performACS(); //Launch ACO
     }
-    else if (selectedProblem == Problem.JSP){
-      JSP jsp = new JSP(['(0,3);(1,2);(2,2)', '(0,2);(2,1);(1,4)', '(1,4);(2,3)']);
+    else if (selectedProblem == Problem.JSP){ // JSP
+      JSP jsp = new JSP(['(0,3);(1,2);(2,2)', '(0,2);(2,1);(1,4)', '(1,4);(2,3)']); // TODO: check if can remove, probably useless
+      // Initialise ACO with user input parameters
       jobSchedulingACO = new JobSchedulingACO(
         nbAnts, nbIterations, pheromoneInitValue,
         alpha, beta, evaporationRate, pheromoneDecay
       );
-      jobSchedulingACO.performACS();
+      jobSchedulingACO.performACS(); //Launch ACO
     }
   }
 
+  // UPDATE METHODS
+  // AppState.<Notifier>.value = (AppState.<Notifier>.value + 1) % 2;
+  // Notifier value change trigger GUI update
+  // It does not matter what the new value is, modulo 2 is a security to prevent any risk of overflow
+  
   static void updatePheromones(){
     //aco = new ACO(10, 20, 1, 0.3, 1, 1, 2);
     //aco.performAntSystem();
@@ -250,6 +273,7 @@ class AppState{
 // GUI RELATED DATA
 // ********************************************************************
 
+// This class holds style definitions and help panels information (title and content file)
 class AppData{
   // Selectable features
   static final problemsList = [
@@ -278,6 +302,7 @@ class AppData{
     );
   }
 
+  // JSP specific
   static var jspJobColors = [
     Colors.teal,
     Colors.deepOrangeAccent,
@@ -287,7 +312,7 @@ class AppData{
     Colors.green[600]!,
   ];
 
-  // help content
+  // help content (title, file in which help contents is define as html)
   static Help helpIndex = Help(
     title: 'Help index',
     content: '''<p>Welcome to the help index. You can access all help content from here.</p>'''
@@ -350,23 +375,26 @@ class AppData{
   );
 }
 
+// Class holding help panels related info
 class Help{
-  String title = '';
-  String file = '';
-  String content = '';
-
+  String title = ''; // Panel title
+  String file = '';  // File in which panel content is defined (html)
+  String content = ''; // String content
+  
   Help({required title, file, content}){
     this.title = title;
     if(file != null) this.file = file;
     if(content != null) this.content = content;
   }
 
+  // Load string content from html file
   void loadAsset() async {
     content = await rootBundle.loadString(file);
     AppState.updateHelp();
   }
 }
 
+// Selected image related data
 class ImageData{
   List<int> bytes = [];
   String name = 'apple.PNG'; // Default (first image from sample)
@@ -374,6 +402,7 @@ class ImageData{
   int height = 0;
 }
 
+// Some enumerations for code clarity
 enum BestAnt { globalBest, iterationBest }
 enum FileSource { sample, computer }
 enum Algorithm { AS, MMAS, ACS }
