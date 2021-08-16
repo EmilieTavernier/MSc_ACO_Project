@@ -3,11 +3,12 @@ import 'package:file_picker/file_picker.dart';
 
 import '../appStaticData.dart';
 
+// File picker for web app
 Future openFilePicker() async {
   var picked =
   await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions:  ['PNG', 'png', 'JPEG', 'jpeg', 'JPG', 'jpg']
+      allowedExtensions:  ['PNG', 'png', 'JPEG', 'jpeg', 'JPG', 'jpg'] // Don't work, hopefully the user will select an image
   );
   if (picked != null) {
     // https://stackoverflow.com/questions/65420592/flutter-web-file-picker-throws-invalid-arguments-path-must-not-be-null-e
