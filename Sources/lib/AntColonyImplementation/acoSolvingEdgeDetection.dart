@@ -6,7 +6,7 @@ import '../ProblemsDefinition/EdgeDetection.dart';
 import 'Ant.dart';
 
 
-// This class implements ACO for ddge detection
+// This class implements ACO for edge detection
 class EdgeDetectionACO {
   late int nbAnts;
   late int nbConstructionSteps;
