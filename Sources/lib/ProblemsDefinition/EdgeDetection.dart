@@ -3,10 +3,12 @@ import 'package:image/image.dart' as Img;
 
 import '../appStaticData.dart';
 
+// This class hold the definition of edge detection problem
 class EdgeDetection {
-  var pixels = <Pixel>[];
-  int maxIntensityVariation = 0;
+  var pixels = <Pixel>[]; // List of image graph nodes (= pixels)
+  int maxIntensityVariation = 0; // Use to compute heuristic information
 
+  // Constructor
   EdgeDetection(){
     if(AppState.selectedImage.bytes.isEmpty) return;
 
@@ -21,7 +23,7 @@ class EdgeDetection {
     AppState.selectedImage.width = grayScaleImg.width;
     AppState.selectedImage.height = grayScaleImg.height;
 
-    // Create graph suitable for ACO
+    // Create graph suitable for ACO (with pixels as nodes)
     for(int i=0; i<grayScaleImg.length; i++){
       pixels.add(new Pixel());
       int x = i % grayScaleImg.width;
@@ -38,6 +40,7 @@ class EdgeDetection {
       // Order is relevant for next intensityVariation computation do not change it
       int v0 = 0, v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
 
+      // Find pixel i neighbours...
       if(x > 0 && y > 0) {
         pixels[i].neighbours.add( pixels[(y - 1) * grayScaleImg.width + (x - 1)]); // [x-1, y-1]
         v0 = pixels[i].neighbours.last.value;
@@ -80,18 +83,21 @@ class EdgeDetection {
       else v7 = pixels[i].value;
       Pixel p = pixels[i];
 
+      // ... and compute the intensity variation around pixel i
       pixels[i].intensityVariation =
         (v0 - v1).abs() +
         (v2 - v3).abs() +
         (v4 - v5).abs() +
         (v6 - v7).abs();
 
+      // Update max intensity variation if needed
       if(pixels[i].intensityVariation > maxIntensityVariation)
         maxIntensityVariation = pixels[i].intensityVariation;
     }
   }
 }
 
+// Definition of an image graph node (= pixel)
 class Pixel {
   late Point coordinates;
   late int index;
