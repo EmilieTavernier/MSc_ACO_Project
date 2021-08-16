@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Scroll bar definition
+
 // Source code from:
 // https://stackoverflow.com/questions/61010841/how-to-make-scrollbar-visible-all-time/61011354
 
