@@ -12,6 +12,7 @@ import "GUIComponents/Animations.dart";
 import "GUIComponents/ControlBar.dart";
 import "GUIComponents/PopUp.dart";
 
+// The main launch the application window
 Future<void> main() async{
   runApp(MyApp());
 }
@@ -79,7 +80,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             width: 320, // 308 enough for desktop
             height: double.infinity,
             //flex: 3,
-            child: Container(
+            child: Container( 
+              // LEFT PANEL (for parameters)
               color: Colors.teal[100],
               height: double.infinity,
               child: SingleChildScrollView(
@@ -88,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // PROBLEM SECTION
                       Text(
                         'Problem selection',
                         style: AppData.sectionTitleStyle,
@@ -104,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             },
                             valueListenable: AppState.dropDownNotifier,
                           ),
+                          // Problem help button (the help panel it opens depend of selected problem)
                           ValueListenableBuilder<int>(
                             builder: (BuildContext context, int value, Widget? child) {
                               var selectedHelp = AppData.helpTSP;
@@ -120,9 +124,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           ),
                         ]
                       ),
+                      // Problem parameters input form
                       ProblemParamForm(),
                       SizedBox(height: 50.0),
-
+                      
+                      // ALGO SECTION
                       Text(
                         'Algorithm selection',
                         style: AppData.sectionTitleStyle,
@@ -139,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               },
                               valueListenable: AppState.dropDownNotifier,
                             ),
+                            // Algorithm help button (help panels it opens depend of selected algorithm and selected problem)
                             ValueListenableBuilder<int>(
                               builder: (BuildContext context, int value, Widget? child) {
                                 var selectedHelp = AppData.helpAS;
@@ -147,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 else if( AppState.selectedAlgo == Algorithm.MMAS )
                                   selectedHelp = AppData.helpMMAS;
                                 else if( AppState.selectedAlgo == Algorithm.ACS ) {
+                                  // ACS is implemented for the three problem so we check which one is selected
                                   if( AppState.selectedProblem == Problem.edgeDetection )
                                     selectedHelp = AppData.helpEdgeDetectionACS;
                                   else if (AppState.selectedProblem == Problem.JSP)
@@ -160,6 +168,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             ),
                           ]
                       ),
+                      // Algorithm parameters input form
                       ACOParamForm(),
                     ]
                   ),
@@ -173,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
+                      // DEMONSTRATION AREA
                       flex: 8,
                       child: Container(
                         margin: const EdgeInsets.all(10.0),
@@ -187,6 +197,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     ),
                     ControlBar(),
                     Expanded(
+                      // INFORMATION AREA
                       flex: 2,
                       child: Container(
                         margin: const EdgeInsets.all(10.0),
@@ -228,12 +239,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         ]
       ),
 
+      // Button visible only if selected problem is JSP 
       floatingActionButton:
         ValueListenableBuilder<int>(
           builder: (BuildContext context, int value, Widget? child) {
             return AppState.selectedProblem == Problem.JSP ?
               FloatingActionButton(
                 onPressed: () {
+                  // Open panel to display list of best schedules found as graph
                   showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => ChartPopUp()
@@ -249,6 +262,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 }
 
+// This method redirects to demonstration display method corresponding to the currently selected problem
 Widget chooseVisual(){
   if(AppState.selectedProblem == Problem.TSP) return VisualTSP();
   if(AppState.selectedProblem == Problem.JSP) return VisualJSP();
@@ -256,12 +270,14 @@ Widget chooseVisual(){
   return VisualTSP();
 }
 
+// This method implements visuals of the TSP demonstration
 class VisualTSP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
       children: [
+        // DISPLAY THE LECTURE KEY
         ValueListenableBuilder<int>(
           builder: (BuildContext context, int value, Widget? child) {
             return CustomPaint( //CustomPaint widget
@@ -271,6 +287,7 @@ class VisualTSP extends StatelessWidget {
           },
           valueListenable: AppState.tspNotifier,
         ),
+        // DISPLAY PHEROMONES
         ValueListenableBuilder<int>(
           builder: (BuildContext context, int value, Widget? child) {
             return CustomPaint( //CustomPaint widget
@@ -280,6 +297,7 @@ class VisualTSP extends StatelessWidget {
           },
           valueListenable: AppState.pheromonesNotifier,
         ),
+        // DISPLAY GRAPH NODES (TSP cities)
         ValueListenableBuilder<int>(
           builder: (BuildContext context, int value, Widget? child) {
             return CustomPaint( //CustomPaint widget
@@ -289,6 +307,7 @@ class VisualTSP extends StatelessWidget {
           },
           valueListenable: AppState.tspNotifier,
         ),
+        // DISPLAY ANIMATED ANTS
         ValueListenableBuilder<int>(
           builder: (BuildContext context, int value, Widget? child) {
             return Stack(
@@ -306,6 +325,7 @@ class VisualTSP extends StatelessWidget {
           },
           valueListenable: AppState.animationNotifier,
         ),
+        // TSP GRAPH HELP BUTTON 
         Positioned(
           top: 8,
           right: -5,
@@ -332,6 +352,7 @@ class VisualTSP extends StatelessWidget {
   }
 }
 
+// This method implements visuals of the edge detection demonstration
 class VisualEdgeDetection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -342,7 +363,8 @@ class VisualEdgeDetection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              flex: 2,
+              // LEFT HALF OF THE DEMONSTRATION SPACE
+              flex: 2, 
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
@@ -350,6 +372,7 @@ class VisualEdgeDetection extends StatelessWidget {
                 child: Stack(
                     alignment: Alignment.center,
                     children: [
+                    // DISPLAY SELECTED IMAGE (on left)
                     ValueListenableBuilder<int>(
                       builder: (BuildContext context, int value, Widget? child) {
                         if( AppState.selectedProblem == Problem.edgeDetection &&
@@ -363,6 +386,7 @@ class VisualEdgeDetection extends StatelessWidget {
                       },
                       valueListenable: AppState.imageChangeNotifier,
                     ),
+                    // DISPLAY ANIMATED ANTS
                     ValueListenableBuilder<int>(
                       builder: (BuildContext context, int value, Widget? child) {
                         return Stack(
@@ -385,6 +409,7 @@ class VisualEdgeDetection extends StatelessWidget {
               ),
             ),
             Expanded(
+              // RIGHT HALF OF THE DEMONSTRATION SPACE
               flex: 2,
               child: Container(
                 width: double.infinity,
@@ -392,6 +417,7 @@ class VisualEdgeDetection extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 child: Stack(
                   children: [
+                    // PHEROMONE DISPLAY (on right)
                     ValueListenableBuilder<int>(
                       builder: (BuildContext context, int value, Widget? child) {
                         return CustomPaint( //CustomPaint widget
@@ -401,6 +427,7 @@ class VisualEdgeDetection extends StatelessWidget {
                       },
                       valueListenable: AppState.pheromonesNotifier,
                     ),
+                    // ANIMATED ANTS DISPLAY (on right)
                     ValueListenableBuilder<int>(
                       builder: (BuildContext context, int value, Widget? child) {
                         return Stack(
@@ -424,7 +451,8 @@ class VisualEdgeDetection extends StatelessWidget {
             ),
           ],
         ),
-        Positioned( // TODO change help (Edge Detection)
+        Positioned( 
+          // GRAPH REPRESENTATION HELP BUTTON 
           top: 8,
           right: -5,
           child: HelpButton(attachedHelp: AppData.helpGraphImage),
@@ -434,14 +462,14 @@ class VisualEdgeDetection extends StatelessWidget {
   }
 }
 
-
-
+// This method implements visuals of the JSP demonstration
 class VisualJSP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
         alignment: Alignment.center,
         children: [
+          // DISPLAY LECTURE KEY
           ValueListenableBuilder<int>(
             builder: (BuildContext context, int value, Widget? child) {
               return CustomPaint( //CustomPaint widget
@@ -451,6 +479,7 @@ class VisualJSP extends StatelessWidget {
             },
             valueListenable: AppState.tasksNotifier,
           ),
+          // DISPLAY PHEROMONES
           ValueListenableBuilder<int>(
             builder: (BuildContext context, int value, Widget? child) {
               return CustomPaint( //CustomPaint widget
@@ -460,6 +489,7 @@ class VisualJSP extends StatelessWidget {
             },
             valueListenable: AppState.pheromonesNotifier,
           ),
+          // DISPLAY JSP GRAPH (nodes + edges)
           ValueListenableBuilder<int>(
             builder: (BuildContext context, int value, Widget? child) {
               return CustomPaint( //CustomPaint widget
@@ -469,6 +499,7 @@ class VisualJSP extends StatelessWidget {
             },
             valueListenable: AppState.tasksNotifier,
           ),
+          // DISPLAY ANIMATED ANTS
           ValueListenableBuilder<int>(
             builder: (BuildContext context, int value, Widget? child) {
               return Stack(
@@ -494,6 +525,7 @@ class VisualJSP extends StatelessWidget {
             },
             valueListenable: AppState.animationNotifier,
           ),
+          // JSP GRAPH HELP BUTTON
           Positioned(
             top: 8,
             right: -5,
