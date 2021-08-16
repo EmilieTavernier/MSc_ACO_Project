@@ -6,6 +6,7 @@ import '../appStaticData.dart';
 import 'Painters.dart';
 import 'ScrollBar.dart';
 
+// Help panel pop up definition
 class HelpPopUp extends StatelessWidget {
   HelpPopUp({
     Key? key,
@@ -37,7 +38,7 @@ class HelpPopUp extends StatelessWidget {
             width: MediaQuery
                 .of(context)
                 .size
-                .width * 0.60,
+                .width * 0.60, // Width of panel is 60% of the application window
             child: CustomScrollbar(
               //isAlwaysShown: true,
                 builder: (context, scrollController) => SingleChildScrollView(
@@ -45,17 +46,17 @@ class HelpPopUp extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Html(
+                      Html( // define HTML display style instructions
                           data: AppState.currentHelp.content,
                           style: {
                             // tables will have the below background color
-                            "p": Style(
+                            "p": Style( // Paragraph
                               fontSize: FontSize(16.0),
                             ),
-                            "li": Style(
+                            "li": Style( // List
                               fontSize: FontSize(16.0),
                             ),
-                            "div": Style(
+                            "div": Style( // Workaround for not bold title
                               fontSize: FontSize(20.0),
                             )
                           }
@@ -74,11 +75,12 @@ class HelpPopUp extends StatelessWidget {
           ],
         );
       },
-      valueListenable: AppState.helpNotifier,
+      valueListenable: AppState.helpNotifier, // To update help panel after html file was loaded
     );
   }
 }
 
+// Alert pop up if computation result is out of range (= infinity)
 class Alert extends StatelessWidget {
   Alert({Key? key}) : super(key: key);
 
@@ -90,7 +92,7 @@ class Alert extends StatelessWidget {
         width: MediaQuery
             .of(context)
             .size
-            .width * 0.60,
+            .width * 0.60, // Width of panel is 60% of the application window
         child: SingleChildScrollView(
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +109,8 @@ class Alert extends StatelessWidget {
   }
 }
 
+// CURRENTLY NOT USED (TODO)
+// Alert panel to notify the user if an image is too big and may result in slow performances
 class AlertBigImage extends StatelessWidget {
   AlertBigImage({Key? key}) : super(key: key);
 
@@ -137,9 +141,9 @@ class AlertBigImage extends StatelessWidget {
 
 
 
-
+// Define button list for the index panel and "See also" section of other help panels
 Widget getButtonsList() {
-
+  // HELP INDEX DEFINITION
   if (AppState.currentHelp == AppData.helpIndex){
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,6 +241,7 @@ Widget getButtonsList() {
     );
   }
 
+  // HELP PANEL "See Also" SECTION
   var buttonsList = <Widget>[];
 
   if(AppState.currentHelp == AppData.helpACO) {
@@ -317,7 +322,8 @@ Widget getButtonsList() {
 
 }
 
-
+// CURRENTLY NOT USED
+// To use if some dropdown options are not implemented yet
 class AlertNotAvailable extends StatelessWidget {
   AlertNotAvailable({Key? key}) : super(key: key);
 
@@ -345,7 +351,7 @@ class AlertNotAvailable extends StatelessWidget {
   }
 }
 
-
+// JSP specific pop up to display best schedule graphs
 class ChartPopUp extends StatelessWidget {
   ChartPopUp({Key? key}) : super(key: key);
 
