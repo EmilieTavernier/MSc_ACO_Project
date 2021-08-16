@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import "../appStaticData.dart";
 import 'PopUp.dart';
 
+// Definition of application dropdowns
 class Dropdown extends StatefulWidget {
   Dropdown({Key? key, required this.itemsList, required this.menu}) : super(key: key);
 
@@ -21,18 +22,22 @@ class _Dropdown extends State<Dropdown> {
   _Dropdown(itemsList, menu){
     this.itemsList = itemsList;
     this.menu = menu;
-    dropdownValue = itemsList[0];
+    dropdownValue = itemsList[0]; // Initial selected item
   }
 
   @override
   Widget build(BuildContext context) {
+    // If problem is not TSP...
     if( AppState.selectedProblem != Problem.TSP && menu == DropMenu.algoSlct){
+      //... Update algorithm selection dropdown to only have one option (ACS)
       menu = DropMenu.shortAlgoSlct;
       itemsList = [AppData.acoVariantsList[2]];
       dropdownValue = itemsList[0];
       AppState.selectedAlgo = Algorithm.ACS;
     }
+    // else if problem is TSP...
     else if ( AppState.selectedProblem == Problem.TSP && menu == DropMenu.shortAlgoSlct ){
+      // ... Update algo selection dropdown to have several options (AS, MMAS, ACS)
       menu = DropMenu.algoSlct;
       itemsList = AppData.acoVariantsList;
       dropdownValue = itemsList[0];
