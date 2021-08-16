@@ -5,7 +5,9 @@ import "../appStaticData.dart";
 import '../ProblemsDefinition/JSP.dart';
 import 'Ant.dart';
 
+// This class implements ACO for job scheduling
 class JobSchedulingACO {
+  // User define parameters
   late int nbAnts;
   late int nbIterations;
   int nbConstructionSteps = 0;
@@ -16,6 +18,7 @@ class JobSchedulingACO {
   late double evaporationRate;
   var pheromoneDecay;
 
+  // Execution variable
   var ants = <Ant>[];
 
   List<List<List<Task>>> bestScheduleRecord = [];
@@ -30,6 +33,7 @@ class JobSchedulingACO {
   var iterationShortestPath = [];
   var iterationShortestLength;
 
+  // The constructor accepts user input parameters
   JobSchedulingACO( int nbAnts, int nbIterations,
                     double pheromoneInitValue,
                     var alpha, var beta,
@@ -38,10 +42,13 @@ class JobSchedulingACO {
     if ( jsp == null ) return;
 
     this.nbAnts = nbAnts;
+    // Initialise all ants...
     for(int i=0; i<nbAnts; i++){
       ants.add(new Ant());
+      // ...With empty schedules
       for(int j=0; j<=jsp.maxMachine; j++) ants[i].schedule.add([]);
     }
+    // Initialise empty best schedule placeholders
     for(int i=0; i<=jsp.maxMachine; i++) {
       globalBestSchedule.add([]);
       iterationBestSchedule.add([]);
@@ -49,15 +56,20 @@ class JobSchedulingACO {
 
     this.nbIterations = nbIterations;
     this.pheromoneInitValue = pheromoneInitValue;
-
+    
+    // For all job...
     for(int i=0; i<jsp.jobs.length; i++){
+      // ..for all task...
       for(int j=0; j<jsp.jobs[i].tasks.length; j++){
-        nbConstructionSteps++;
+        nbConstructionSteps++; 
+        // ...for all successors...
         for(int k=0; k<jsp.jobs[i].tasks[j].successors.length; k++) {
+           // ...Initialise pheromone concentration
           jsp.jobs[i].tasks[j].pheromonesConcentration.add(pheromoneInitValue);
         }
       }
     }
+    // Number of construction steps = nb of nodes - 1
     nbConstructionSteps--;
 
     this.alpha = alpha;
@@ -66,16 +78,17 @@ class JobSchedulingACO {
     this.pheromoneDecay = pheromoneDecay;
   }
 
+  // This function perform ACS for JSP
   performACS() async {
     if(nbAnts == 0 || ants.length == 0) return null;
-    print("performJobSchedulingACS()");
+    //print("performJobSchedulingACS()");
     AppState.updateDemoStatus();
 
     // Looping for nbIterations iterations
     for(int i=0; i<nbIterations; i++){
       globalBestHasChanged = false;
 
-      // Looping on all ants
+      // Looping on all ants to reinitialise the fields at the beginning of each iteration
       for(int j=0; j<nbAnts; j++) {
         ants[j].currentNode = 0;
         ants[j].solutionLength = 0;
@@ -87,13 +100,15 @@ class JobSchedulingACO {
 
       // Construct each ant's solution
       for(int step = 0; step < nbConstructionSteps; step++){
+        // Update GUI informations
         AppState.updateExecutionInfo(
             info: 'Iteration ${i+1}/$nbIterations - Step ${step+1}/$nbConstructionSteps',
             additional: i == 0? 'At start, all edges have same pheromone concentration' : AppState.additionalInfo
         );
-
+        // For all ants, choose next destination
         for(int j=0; j<nbAnts; j++) chooseNextDestination(j);
-        updatePheromonesIntermediate();
+        // And perform local update
+        updatePheromonesIntermediate(); 
 
         // After choosing next destination for each ants,
         // we inform GUI to animate their movement on screen
@@ -137,10 +152,12 @@ class JobSchedulingACO {
       AppState.updatePheromones();
       var info = i > 0 ? AppState.additionalInfo : '';
 
+      // If we found a new best solution...
       if(globalBestHasChanged) {
+        // Store it
         bestScheduleRecord.add(globalBestSchedule);
         bestScheduleIterationRecord.add(i);
-
+        // And display a GUI update notice
         if(i > 0) info += '...\n';
         info += 'Iteration ${i + 1} update - shortest known solution (orange path) duration: ${globalShortestLength.toStringAsFixed(2)}';
       }
@@ -148,9 +165,11 @@ class JobSchedulingACO {
           additional: info
       );
     }
+    // Tell app state ACS is not performing anymore
     AppState.updateDemoStatus();
   }
 
+  // This functions selects next destination for an ant
   chooseNextDestination(int antIndex){
     var potentialNextProbabilities = []; // Pseudo probabilities of candidates to be chosen as next destination
     var sumProbabilities = 0.0;
@@ -165,12 +184,15 @@ class JobSchedulingACO {
     List<Task> successors = jsp.jobs[currentJob].tasks[currentTask].successors;
     List<double> pheromones = jsp.jobs[currentJob].tasks[currentTask].pheromonesConcentration;
 
+    // For all potential successors
     for(int i=0; i<successors.length; i++){
       // We compute the successor's probability to be chosen as next destination
       var pseudoProbability;
 
+      // If a successor was already visited or if it's same job predecessors weren't visited yet...
       if( ants[antIndex].solution.contains(successors[i].id) ||
           (successors[i].id % 100 > 0 && !ants[antIndex].solution.contains(successors[i].id-1)) ){
+        // ... it can't be chosen as next destination
         pseudoProbability = 0;
       }
       else {
@@ -225,17 +247,20 @@ class JobSchedulingACO {
     updateSchedule(ants[antIndex]);
   }
 
+  // This function performs pheromone local updates
   updatePheromonesIntermediate(){
+    // For all ants...
     for(int i=0; i<nbAnts; i++){
+      // Translate node id to array indexes
       int prevTask = ants[i].previousNode % 100;
       int prevJob = ((ants[i].previousNode - prevTask) / 100).floor();
 
-      //print("prevId $prevTask - prevJob $prevJob - prevTask $prevTask ");
-
+      // And find which successors it correspond to
       int j = 0;
       var successors = jsp.jobs[prevJob].tasks[prevTask].successors;
       while (ants[i].currentNode != successors[j].id) j++;
 
+      // ... compute new pheromone values for successor
       var oldPheromoneValue = jsp.jobs[prevJob].tasks[prevTask].pheromonesConcentration[j];
 
       jsp.jobs[prevJob].tasks[prevTask].pheromonesConcentration[j] =
@@ -243,12 +268,14 @@ class JobSchedulingACO {
     }
   }
 
+  // This function performs pheromone oflline updates
   updatePheromones(){
-    // Compute iteration and global shortest path length
     iterationShortestLength = null;
+    // For all ants...
     for(int i=0; i<nbAnts; i++) {
+      // ... Comput solution length
       ants[i].solutionLength = computeSolutionLength(ants[i].schedule);
-
+      // ... And update best solutions if needed
       if (iterationShortestLength == null || ants[i].solutionLength < iterationShortestLength){
         iterationShortestLength = ants[i].solutionLength;
         iterationShortestPath = ants[i].solution;
@@ -274,12 +301,13 @@ class JobSchedulingACO {
           var id1 = jsp.jobs[i].tasks[j].id;
           var id2 = jsp.jobs[i].tasks[j].successors[k].id;
 
+          // Global best option (user selected)
           if(AppState.selectedBest == BestAnt.globalBest){
             if (isEdgeIJInPath(globalShortestPath, id1, id2)) {
               newPheromone += (evaporationRate * 1 / globalShortestLength);
             }
           }
-          // Iteration best option
+          // Iteration best option (user selected)
           if(AppState.selectedBest == BestAnt.iterationBest){
             if (isEdgeIJInPath(iterationShortestPath, i, j+i+1)) {
               newPheromone += (evaporationRate * 1 / iterationShortestLength);
@@ -293,9 +321,10 @@ class JobSchedulingACO {
     }
   }
 
+  // This function append last visited node to an ant schedule
   void updateSchedule(Ant ant) {
+    // Convert node id to array indexes
     var taskId = ant.currentNode;
-
     int currentTask = taskId % 100;
     int currentJob = ((taskId - currentTask) / 100).floor();
 
@@ -330,6 +359,7 @@ class JobSchedulingACO {
     ant.schedule[task.machine].add(task);
   }
 
+  // This function returns the length (= duration) of a schedule
   int computeSolutionLength(List<List<Task>> schedule){
     var machineScheduleLengths = <int>[];
 
@@ -342,6 +372,7 @@ class JobSchedulingACO {
     return( machineScheduleLengths.reduce(max) );
   }
 
+  // This function checks if edge is an edge is part of a solution (solution = path)
   bool isEdgeIJInPath(path, i, j){
     int node = 0;
     if(path.isNotEmpty) {
@@ -355,6 +386,7 @@ class JobSchedulingACO {
     return false;
   }
 
+  // This functions print a schedule to the console
   printSchedule(List<List<Task>> schedule){
     for(int machine=0; machine<schedule.length; machine++){
       var str = 'machine $machine: ';
@@ -367,6 +399,7 @@ class JobSchedulingACO {
     print('');
   }
 
+  // This functions print a solution (list of nodes id) to the console
   printAntsSolution(){
     for(int i=0; i<nbAnts; i++)
       print(ants[i].solution);
