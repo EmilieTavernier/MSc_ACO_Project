@@ -98,6 +98,7 @@ class PheromonePainterEdgeDetection extends CustomPainter { //         <-- Custo
     var newImageWidth = AppState.selectedImage.width.toDouble() * 2;
     var newImageHeight = AppState.selectedImage.height.toDouble() * 2;
 
+    // Compute onscreen image dimensions
     if( AppState.selectedImage.width > AppState.selectedImage.height &&
         AppState.selectedImage.width > size.width / 2){
       newImageWidth = parentWidth;
@@ -118,8 +119,9 @@ class PheromonePainterEdgeDetection extends CustomPainter { //         <-- Custo
     var max = pheromone.last;
     var median = pheromone[(pheromone.length/2).floor()];
 
-    // Paint pheromones
+    // For all pixels, paint pheromones...
     for(int i=0; i<edgeDetection.pixels.length; i++){
+      // ... only if concentration is big enough (> median)
       if(edgeDetection.pixels[i].pheromoneValue > median) {
         Color edgeColor = Colors.black;
 
@@ -128,12 +130,14 @@ class PheromonePainterEdgeDetection extends CustomPainter { //         <-- Custo
               edgeDetection.pixels[i].pheromoneValue / max)
           ..strokeWidth = 1.0;
 
+        // Translate pixel image coordinates to demonstration 
         double x = edgeDetection.pixels[i].coordinates.x.toDouble();
         double y = edgeDetection.pixels[i].coordinates.y.toDouble();
 
         x = x * newImageWidth / AppState.selectedImage.width;
         y = y * newImageHeight / AppState.selectedImage.height;
 
+        // Demonstration area is cut in half (image on left side, pheromone display on right side)
         x = x + parentWidth / 2 - newImageWidth / 2;
         y = y + parentHeight / 2 - newImageHeight / 2;
 
@@ -174,6 +178,7 @@ class CitiesPainter extends CustomPainter { //         <-- CustomPainter class
         ..color = Colors.teal
         ..style = PaintingStyle.fill;
 
+      // Translate cities coordinates to demonstration area coordinates
       double x = marginX + tsp.cities[i].x.toDouble() * (parentWidth - 2 * marginX);
       double y = parentHeight - (marginY + tsp.cities[i].y.toDouble() * (parentHeight - 2 * marginY));
 
@@ -208,8 +213,11 @@ class CirclePainter extends CustomPainter { //         <-- CustomPainter class
       ..color = Colors.amber.shade800
       ..style = PaintingStyle.fill;
 
+    
+    // Translate ants coordinates to demonstration area coordinates
     double newX = marginX + x * (parentWidth - 2 * marginX);
     double newY = parentHeight - (marginY + y * (parentHeight - 2 * marginY));
+    
     canvas.drawCircle(Offset(newX, newY), 5, paint);
   }
 
@@ -235,6 +243,7 @@ class CirclePainterEdgeDetection extends CustomPainter { //         <-- CustomPa
     var newImageWidth = AppState.selectedImage.width.toDouble() * 2;
     var newImageHeight = AppState.selectedImage.height.toDouble() * 2;
 
+    // Retrieve on screen image dimensions
     if( AppState.selectedImage.width > AppState.selectedImage.height &&
         AppState.selectedImage.width > size.width / 2){
       newImageWidth = parentWidth;
@@ -251,9 +260,11 @@ class CirclePainterEdgeDetection extends CustomPainter { //         <-- CustomPa
       ..color = Colors.amber.shade800
       ..style = PaintingStyle.fill;
 
+    // Translate ant coordinates to demonstration area coordinates
     double newX = x * newImageWidth / AppState.selectedImage.width;
     double newY = y * newImageHeight / AppState.selectedImage.height;
 
+    // Demonstration area is cut in half (image displayed on left side, pheromone displayed on right side)
     newX = newX + parentWidth / 2 - newImageWidth / 2;
     newY = newY + parentHeight / 2 - newImageHeight / 2;
 
@@ -306,13 +317,14 @@ class CirclePainterJSP extends CustomPainter { //         <-- CustomPainter clas
       noShift = true;
     }
 
-
+    // Translate ant coordinates to demonstration area coordinates
     x = marginX + x/jsp.nbMaxTasks * (parentWidth - 2 * marginX);
     y = parentHeight - (marginY + y/jsp.jobs.length * (parentHeight - 2 * marginY));
     targetedX = marginX + targetedX/jsp.nbMaxTasks * (parentWidth - 2 * marginX);
     targetedY = parentHeight - (marginY + targetedY/jsp.jobs.length * (parentHeight - 2 * marginY));
     targetedX += adjustment;
 
+    // Take into account edge's curve
     var norm = sqrt((targetedY - y) * (targetedY - y) + (targetedX - x) * (targetedX - x));
     var unitVectorX = - (targetedY - y) / norm;
     var unitVectorY = (targetedX - x) / norm;
@@ -395,11 +407,13 @@ class TaskPainter extends CustomPainter { //         <-- CustomPainter class
         double x = tasks[j].coordinates.x.toDouble();
         double y = tasks[j].coordinates.y.toDouble();
 
+        // Translate task node coordinates to demonstration area coordinates
         x = marginX + x/jsp.nbMaxTasks * (parentWidth - 2 * marginX);
         y = parentHeight - (marginY + y/jsp.jobs.length * (parentHeight - 2 * marginY));
 
         canvas.drawCircle(Offset(x, y), radius, paint);
 
+        // Display task description "(machine, duration)" above the task node
         String str = '(${tasks[j].machine}, ${tasks[j].duration})';
         if(i == 0) str = 'start';
         TextSpan span = new TextSpan(
@@ -420,12 +434,14 @@ class TaskPainter extends CustomPainter { //         <-- CustomPainter class
     }
   }
 
+  // Method to paint an arrow
   paintArrow(task1, task2){
     double x1 = task1.coordinates.x.toDouble();
     double y1 = task1.coordinates.y.toDouble();
     double x2 = task2.coordinates.x.toDouble();
     double y2 = task2.coordinates.y.toDouble();
 
+    // Translate to demonstration area coordinates
     x1 = marginX + x1 / jsp.nbMaxTasks * (parentWidth - 2 * marginX);
     y1 = parentHeight -
         (marginY + y1 / jsp.jobs.length * (parentHeight - 2 * marginY));
@@ -445,7 +461,9 @@ class TaskPainter extends CustomPainter { //         <-- CustomPainter class
     paint.strokeWidth = 1.0;
     paint.color = Colors.black.withOpacity(0.2);
 
+    // If edge is linked to departure point or linked 2 tasks from a common job
     if(j1 == 0 || j1 == j2) {
+      // ... it is a straight edge (no curve)
       path.moveTo(x1, y1);
       path.lineTo(x2 - radius, y2);
       path = ArrowPath.make(path: path);
@@ -453,6 +471,8 @@ class TaskPainter extends CustomPainter { //         <-- CustomPainter class
       canvas.drawPath(path, paint);
     }
     else{
+      // ... else it is curved to prevent overlaps
+      
       //var adjustment =  j1 < j2 ? - radius : radius;
 
       //paint.color = AppData.jspMachineColors[task1.machine];
@@ -534,7 +554,9 @@ class PheromonePainterJSP extends CustomPainter { //         <-- CustomPainter c
           Task successorK = jsp.jobs[i].tasks[j].successors[k];
 
           Color edgeColor = Colors.black;
+          // if edge ij belong to best path...
           if ( jobSchedulingACO.isEdgeIJInPath(jobSchedulingACO.globalShortestPath, taskJ.id, successorK.id) ){
+            //... It is painted in orange
             edgeColor = Colors.deepOrange;
           }
 
@@ -545,6 +567,7 @@ class PheromonePainterJSP extends CustomPainter { //         <-- CustomPainter c
           ..strokeWidth = 1.0;
           //..strokeWidth = 2.0;
 
+          // Translate to demonstration area coordinates
           double x1 = marginX + 
                       taskJ.coordinates.x.toDouble() / 
                       jsp.nbMaxTasks * (parentWidth - 2 * marginX);
@@ -564,6 +587,7 @@ class PheromonePainterJSP extends CustomPainter { //         <-- CustomPainter c
           //var crossAdjustment =  taskJ.id < successorK.id ? - radius : radius;
           //if(startAdjustment != 0) crossAdjustment = 0;
 
+          // Computing edge's curve 
           var norm = sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
 
           var unitVectorX = - (y2 - y1) / norm;
@@ -719,6 +743,7 @@ class SchedulePainter extends CustomPainter { //         <-- CustomPainter class
 
         var job = ((taskId - taskId % 100) / 100).floor();
 
+        // Translate to help panel coordinates
         var x = marginX + currentX;
         var y = parentHeight - (marginY + (machine+1) / (schedule.length) * graphHeight);
         var width = duration / firstScheduleLength * graphWidth;
@@ -778,6 +803,7 @@ class SchedulePainter extends CustomPainter { //         <-- CustomPainter class
       textPainter.paint(canvas, Offset(x, y));
     }
 
+    // X axis legend
     String str = 'Duration';
     TextSpan span = new TextSpan(style: AppData.regularTextStyle, text: str);
     var textPainter = TextPainter(text: span, textDirection: TextDirection.ltr);
