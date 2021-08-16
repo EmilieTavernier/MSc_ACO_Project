@@ -5,6 +5,8 @@ Author: Emilie Tavernier
 The Ant Colony Optimisation (ACO) demonstration software is an educational tool demonstrating ACO algorithms usage in a variety of problems (traveling salesman problem, job scheduling and edge detection).<br/>
 This project was realised for a dissertation for the degree of MSc. Artificial Intelligence at Heriot Watt University (Scotland).<br/>
 
+![image](https://user-images.githubusercontent.com/47278505/129526981-e2f26d0f-3e22-4fd9-bfb8-dd9ad98bd999.png)
+
 ## Getting Started
 
 This software is accessible as a web app at this address: https://emilietavernier.github.io/MSc_ACO_Project/#/<br/>
