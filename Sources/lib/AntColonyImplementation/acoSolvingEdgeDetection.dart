@@ -5,6 +5,8 @@ import "../appStaticData.dart";
 import '../ProblemsDefinition/EdgeDetection.dart';
 import 'Ant.dart';
 
+
+// This class implements ACO for ddge detection
 class EdgeDetectionACO {
   late int nbAnts;
   late int nbConstructionSteps;
@@ -18,6 +20,7 @@ class EdgeDetectionACO {
 
   var ants = <Ant>[];
 
+  // The constructor accepts user input parameters
   EdgeDetectionACO( int nbAnts, int nbIterations, int nbConstructionSteps,
                     double pheromoneInitValue,
                     var alpha, var beta,
@@ -26,12 +29,14 @@ class EdgeDetectionACO {
     if ( edgeDetection == null ) return;
 
     this.nbAnts = nbAnts;
+    // We initialise the ants
     for(int i=0; i<nbAnts; i++) ants.add(new Ant());
 
     this.nbIterations = nbIterations;
     this.nbConstructionSteps = nbConstructionSteps;
     this.pheromoneInitValue = pheromoneInitValue;
 
+    // We initialise all nodes (pixels) pheromone value
     for(int i=0; i<edgeDetection.pixels.length; i++){
       edgeDetection.pixels[i].pheromoneValue = pheromoneInitValue;
     }
@@ -42,6 +47,7 @@ class EdgeDetectionACO {
     this.pheromoneDecay = pheromoneDecay;
   }
 
+  // This function implements  ACS algorithm for edge detection
   performACS() async {
     if(nbAnts == 0 || ants.length == 0) return null;
     print("performEdgeDetectionACS()");
@@ -67,11 +73,12 @@ class EdgeDetectionACO {
 
       // Construct each ant's solution
       for(int step = 0; step < nbConstructionSteps; step++){
+        // We update GUI execution info (iteration and step counter)
         AppState.updateExecutionInfo(
             info: 'Iteration ${i+1}/$nbIterations - Step ${step+1}/$nbConstructionSteps',
             additional: i == 0? 'At start, all pixels have same pheromone concentration' : AppState.additionalInfo
         );
-
+        // For all ants, we choose next destination
         for(int j=0; j<nbAnts; j++) chooseNextDestination(j);
         updatePheromonesIntermediate();
 
@@ -89,13 +96,15 @@ class EdgeDetectionACO {
         // And wait for the animation to finish
         while( AppState.animating ){
           int now = DateTime.now().millisecondsSinceEpoch;
+          // If stop button was clicked (or if computation exceeded capacity, resulting in "infinity")
           if(AppState.abort){
-            print("ABORT");
+            // print("ABORT");
             AppState.updateDemoStatus();
             AppState.animating = false;
             AppState.abort = false;
             return;
           }
+          // If pause button was clicked
           if(!AppState.paused){
             // Check if animation duration (2s) is completed...
             // ... with a 50ms margin
@@ -108,8 +117,10 @@ class EdgeDetectionACO {
           await Future.delayed(const Duration(milliseconds: 1));
         }
       }
+      // Compute new pheromone values
       updatePheromones();
       //print(pheromoneConcentrations);
+      
       // Inform GUI to update pheromones display
       AppState.updatePheromones();
       AppState.updateExecutionInfo(additional: '');
@@ -117,8 +128,9 @@ class EdgeDetectionACO {
     AppState.updateDemoStatus();
   }
 
+  // This function select the next destination for an ant
   chooseNextDestination(int antIndex){
-    var potentialNextProbabilities = []; // Pseudo probabilities of candidates to be chosen as next destination
+    var potentialNextProbabilities = []; // List of pseudo probabilities of candidates to be chosen as next destination
     var sumProbabilities = 0.0;
 
     double heuristicInfo = 0;
@@ -178,14 +190,18 @@ class EdgeDetectionACO {
     ants[antIndex].solutionHashSet.add(ants[antIndex].currentNode);
   }
 
+  // This function performs the local pheromone update
   updatePheromonesIntermediate(){
+    // For all ants...
     for(int j=0; j<nbAnts; j++){
+      // ... Compute new pheromone value for current pixel
       var oldPheromoneValue = edgeDetection.pixels[ants[j].currentNode].pheromoneValue;
       edgeDetection.pixels[ants[j].currentNode].pheromoneValue =
         (1 - pheromoneDecay) * oldPheromoneValue + pheromoneDecay * pheromoneInitValue;
     }
   }
 
+  // This function performs the offline pheromone update
   updatePheromones(){
     // Compute ants' solution lengths
     for(int i=0; i<nbAnts; i++){
@@ -195,13 +211,13 @@ class EdgeDetectionACO {
       ants[i].solutionLength = ants[i].solutionLength / ants[i].solution.length;
     }
 
-    // Compute pheromone evaporation
+    // For all nodes (pixels), compute pheromone evaporation
     for(int i=0; i<edgeDetection.pixels.length; i++) {
       var oldPheromone = edgeDetection.pixels[i].pheromoneValue;
       var newPheromone = (1 - evaporationRate) * oldPheromone;
       edgeDetection.pixels[i].pheromoneValue = newPheromone;
     }
-    // Compute pheromone laid by ants
+    // Compute pheromone laid by all ants
     for (int i = 0; i < nbAnts; i++) {
       var depositPheromone = evaporationRate * ants[i].solutionLength;
       for (int j = 0; j < ants[i].solution.length; j++ ){
@@ -209,7 +225,8 @@ class EdgeDetectionACO {
       }
     }
 
-    /*
+    /* 
+    // Old non optimise code
     for(int i=0; i<edgeDetection.pixels.length; i++) {
       var oldPheromone = edgeDetection.pixels[i].pheromoneValue;
       var depositPheromone = 0.0;
@@ -223,6 +240,7 @@ class EdgeDetectionACO {
     */
   }
 
+  // Print an ant solution (list of visited nodes' id)
   printAntsSolution(){
     for(int i=0; i<nbAnts; i++)
       print(ants[i].solution);
