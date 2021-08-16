@@ -259,6 +259,7 @@ class ProblemParamFormState extends State<ProblemParamForm> {
     );
   }
 
+  // Edge detection specific method to load selected image (only if image is from app sample, no need if the user passed by the file picker)
   _loadImage() async {
     var name = AppState.selectedImage.name;
     var path = imagesSamplePaths[imagesSampleNames.indexOf(name)];
@@ -271,6 +272,7 @@ class ProblemParamFormState extends State<ProblemParamForm> {
     AppState.generateProblem();
   }
 
+  // Edge detection specific method to initialise an image if placeholder is empty
   Future _initImages() async {
     // >> To get paths you need these 2 lines
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
@@ -288,17 +290,18 @@ class ProblemParamFormState extends State<ProblemParamForm> {
     });
   }
 
+  // JSP Specific method to update job description fields
   void updateJobsList(nbJobs){
-    var defaultJobsDescription = ['(0,3);(1,2);(2,2)', '(0,2);(2,1);(1,4)', '(1,4);(2,3)'];
+    var defaultJobsDescription = ['(0,3);(1,2);(2,2)', '(0,2);(2,1);(1,4)', '(1,4);(2,3)']; // Pre-filled default job description
 
-    if (nbJobs > jobsField.length) {
-      while (jobsField.length < nbJobs) {
+    if (nbJobs > jobsField.length) { // add fields to match number of job input field value
+      while (jobsField.length < nbJobs) { 
         jobsCtrl.add(TextEditingController());
 
-        if(jobsField.length < 3)
+        if(jobsField.length < 3) // If we have three fields, use default pre-filled values
           jobsCtrl.last.text = defaultJobsDescription[jobsField.length];
 
-        jobsField.add(
+        jobsField.add( 
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -315,7 +318,7 @@ class ProblemParamFormState extends State<ProblemParamForm> {
         );
       }
     }
-    else {
+    else { // Remove fields to match number of job input field value
       while (jobsField.length > nbJobs) {
         jobsCtrl.removeLast();
         jobsField.removeLast();
@@ -372,6 +375,7 @@ class ACOParamFormState extends State<ACOParamForm> {
     // Build a Form widget using the _formKey created above.
     return ValueListenableBuilder<int>(
       builder: (BuildContext context, int value, Widget? child) {
+        // Pre-filled default input values (choose in regards to performances and demonstration clarity)
         nbAntsCtrl.text = '20';
         nbIterationsCtrl.text = '10';
         nbConstructionStepCtrl.text = '40';
@@ -384,10 +388,10 @@ class ACOParamFormState extends State<ACOParamForm> {
         pheromoneMinCtrl.text = '0.5';
         q0Ctrl.text = '0.1';
         pheromoneDecayCtrl.text = '0.5';
-        if(AppState.selectedProblem == Problem.JSP) {
+        if(AppState.selectedProblem == Problem.JSP) { // for JSP
           nbAntsCtrl.text = '5';
         }
-        if (AppState.selectedProblem == Problem.edgeDetection) {
+        if (AppState.selectedProblem == Problem.edgeDetection) { // for Edge detection
           nbAntsCtrl.text = '512';
           nbIterationsCtrl.text = '20';
           nbConstructionStepCtrl.text = '40';
