@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// Custom text fields definition for user input parameters
 class CustomTextField extends StatelessWidget{
   CustomTextField({
     Key? key,
@@ -40,7 +41,9 @@ class CustomTextField extends StatelessWidget{
             width: width,
             child: TextFormField(
               controller: controller,
-              validator: (value) {
+              validator: (value) { 
+                // To check if input is valid.
+                // return ''; (= empty error message) means it is not valid (input field will be highlighted in red)
                 if (value == null || value.isEmpty) {
                   return '';
                 }
@@ -74,7 +77,7 @@ class CustomTextField extends StatelessWidget{
                   controller.text = min.toString();
                   return '';
                 }
-                return null;
+                return null; // Input is valid
               },
               inputFormatters: [
                 //LengthLimitingTextInputFormatter(3),
@@ -87,10 +90,10 @@ class CustomTextField extends StatelessWidget{
                 border: OutlineInputBorder(),
                 labelText: labelIn,
 
-                errorBorder: OutlineInputBorder(
+                errorBorder: OutlineInputBorder( // If input is not valid, field borders turn red
                   borderSide: BorderSide(color: Colors.red),
                 ),
-                errorStyle: TextStyle(height: 0),
+                errorStyle: TextStyle(height: 0), // No error message display (no room for this)
               ),
 
               onChanged: onChanged,
