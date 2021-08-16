@@ -3,9 +3,10 @@ import 'package:filepicker_windows/filepicker_windows.dart';
 
 import '../appStaticData.dart';
 
+// File picker for desktop app (Windows only)
 Future openFilePicker() async {
   final file = OpenFilePicker()
-    ..filterSpecification = {
+    ..filterSpecification = { // Don't work, hopefully the user will pick an image
       'Images (*.PNG; *.png; *JPEG; *jpeg; *JPG; *jpg)':
       '*.PNG; *.png; *JPEG; *jpeg; *JPG; *jpg',
     }
