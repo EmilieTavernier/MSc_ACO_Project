@@ -34,6 +34,7 @@ class PheromonePainter extends CustomPainter { //         <-- CustomPainter clas
     var max = pheromoneConcentrations[0][0];
     bool allEqual = true;
 
+    // Iterate through all edges i-j to find the maximum pheromone concentration
     for(int i=0; i<pheromoneConcentrations.length; i++){
       for(int j=0; j<pheromoneConcentrations[i].length; j++){
         if(max < pheromoneConcentrations[i][j] )
@@ -49,15 +50,20 @@ class PheromonePainter extends CustomPainter { //         <-- CustomPainter clas
         Color edgeColor = Colors.black;
         double thickness = 3.0;
 
+        // If edge ij is in best path...
         if ( aco.isEdgeIJInPath(aco.globalShortestPath, i, j+i+1) ){
+          //... we paint it in orange
           edgeColor = Colors.deepOrange;
         }
+        // If pheromones concentration are all equal (first iteration), we reduce thickness for visual clarity
         if(allEqual) thickness = 1.0;
 
+        // Paint edges with opacity and thickness proportional to pheromone concentration for the current iteration
         var paint = Paint()
         ..color = edgeColor.withOpacity(pheromoneConcentrations[i][j]/max)
         ..strokeWidth = thickness * pheromoneConcentrations[i][j]/max;
 
+        // Translate cities coordinates to demonstration area coordinates
         double x1 = marginX + tsp.cities[i].x.toDouble() * (parentWidth - 2 * marginX);
         double y1 = parentHeight - (marginY + tsp.cities[i].y.toDouble() * (parentHeight - 2 * marginY));
         double x2 = marginX + tsp.cities[j+i+1].x.toDouble() * (parentWidth - 2 * marginX);
@@ -65,6 +71,7 @@ class PheromonePainter extends CustomPainter { //         <-- CustomPainter clas
 
         var p1 = Offset(x1, y1);
         var p2 = Offset(x2, y2);
+        // Draw edge ij pheromone concentration
         canvas.drawLine(p1, p2, paint);
       }
     }
