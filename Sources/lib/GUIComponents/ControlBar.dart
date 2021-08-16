@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import "../appStaticData.dart";
 import "Buttons.dart";
 
+// Control bar definition (stop, pause, play and speed control buttons under the demonstration area)
 class ControlBar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class ControlBar extends StatelessWidget{
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ControlButton(
+            ControlButton( // STOP
               icon: Icon(Icons.stop),
               action:
               AppState.performingACO ? AppState.stop : null, topRightRadius: 0,
@@ -19,7 +20,7 @@ class ControlBar extends StatelessWidget{
               bottomRightRadius: 0,
               bottomLeftRadius: 1
             ),
-            ControlButton(
+            ControlButton( // PAUSE
               icon: Icon(Icons.pause),
               action: (AppState.performingACO && !AppState.paused) ? AppState.pause : null,
               topRightRadius: 0,
@@ -27,7 +28,7 @@ class ControlBar extends StatelessWidget{
               bottomRightRadius: 0,
               bottomLeftRadius: 0
             ),
-            ControlButton(
+            ControlButton( // PLAY
               icon: Icon(Icons.play_arrow),
               action: (AppState.performingACO && AppState.paused) ? AppState.play : null,
               topRightRadius: 0,
@@ -35,7 +36,7 @@ class ControlBar extends StatelessWidget{
               bottomRightRadius: 0,
               bottomLeftRadius: 0
             ),
-            ControlDropDown(
+            ControlDropDown( // SPEED CONTROL
               topRightRadius: 1,
               topLeftRadius: 0,
               bottomRightRadius: 1,
