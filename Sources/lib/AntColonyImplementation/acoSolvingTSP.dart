@@ -3,6 +3,7 @@ import '../appStaticData.dart';
 
 import '../AntColonyImplementation/Ant.dart';
 
+// This class implements ACO algorithms (AS, MMAS, ACS) for TSP
 class ACO {
   late int nbAnts;
   late int nbIterations;
@@ -31,6 +32,7 @@ class ACO {
   var globalShortestLength;
   bool shortestHasChanged = false;
 
+  // The constructor accepts user input parameters
   ACO( int nbAnts, int nbIterations,
        var pheromoneInitValue,
        var evaporationRate, var alpha, var beta, var Q,
@@ -39,15 +41,19 @@ class ACO {
    if ( tsp == null ) return;
 
     this.nbAnts = nbAnts;
+    // Initialise all ants
     for(int i=0; i<nbAnts; i++) ants.add(new Ant());
 
     this.nbIterations = nbIterations;
+    // If the selected algorithm is MMAS...
     if( AppState.selectedAlgo == Algorithm.MMAS )
+      // ... pheromone are initialised to the upper bound value
       this.pheromoneInitValue = maxPheromone;
-    else
+    else 
       this.pheromoneInitValue = pheromoneInitValue;
 
     this.evaporationRate = evaporationRate;
+    // Initialise all edges (paths between cities) pheromone concentrations and compute their length (distance between cities)
     for(int i=0; i<tsp.cities.length; i++){
       var nthCityEdgesPheromones = [];
       var distancesFromCityI = [];
@@ -68,9 +74,12 @@ class ACO {
     this.q0 = q0;
   }
 
+  // This functions performs AS, MMAS or ACS for TSP
   performAntSystem() async {
     if(nbAnts == 0 || ants.length == 0) return null;
-    print("performAntSystem()");
+    //print("performAntSystem()");
+    
+    // Update app state to "performingACO"
     AppState.updateDemoStatus();
 
     // Looping for nbMaxStep iteration
@@ -165,9 +174,11 @@ class ACO {
         additional: info
       );
     }
+    // Update app state to "not performingACO"
     AppState.updateDemoStatus();
   }
 
+  // This function selects next city destination for an ant
   chooseNextDestination(int antIndex){
     var potentialNextCity = [];          // List of potential candidates for next destination
     var potentialNextProbabilities = []; // Pseudo probabilities of candidates to be chosen as next destination
@@ -181,7 +192,8 @@ class ACO {
     // ACS true range for randQ should be [0,1] but nextDouble range is [0, 1)
     // This is a minor imprecision we accept for simplicity sake.
 
-    if(AppState.selectedAlgo == Algorithm.ACS && randQ <= q0){
+    // If selected algorithm is ACS and random variable inferior or equal to q0 treshold...
+    if(AppState.selectedAlgo == Algorithm.ACS && randQ <= q0)
       var argmax = -1.0;
       var maxIndex = 0;
       for(int potentialNext=0; potentialNext<tsp.cities.length; potentialNext++){
@@ -191,7 +203,7 @@ class ACO {
           var greaterIndex = max(ants[antIndex].currentNode, potentialNext);
 
           var arg = pheromoneConcentrations[smallerIndex][greaterIndex - smallerIndex - 1] *
-                    pow(distancesBetweenCities[smallerIndex][greaterIndex  - smallerIndex - 1], beta);
+                    pow(distancesBetweenCities[smallerIndex][greaterIndex  - smallerIndex - 1], beta); // TODO: check formula
           if(arg > argmax){
             argmax = arg;
             maxIndex = potentialNext;
@@ -268,6 +280,7 @@ class ACO {
     ants[antIndex].solution.add(ants[antIndex].currentNode);
   }
 
+  // This function performs local pheromone update (ACS specific)
   acsLocalUpdatePheromones(){
     var updatedPheromones = pheromoneConcentrations;
     for(int k=0; k<nbAnts; k++) {
@@ -284,6 +297,7 @@ class ACO {
     pheromoneConcentrations = updatedPheromones;
   }
 
+  // This method performs offline pheromone update (AS, MMAS and ACS)
   updatePheromones(){
     var updatedPheromones = pheromoneConcentrations;
     var iterationShortestPath = [];
@@ -315,7 +329,8 @@ class ACO {
         shortestHasChanged = true;
       }
     }
-
+    
+    // PHEROMONE UPDATE
     for(int i=0; i<pheromoneConcentrations.length; i++){
       for(int j=0; j<pheromoneConcentrations[i].length; j++){
         var tau = pheromoneConcentrations[i][j];
@@ -353,12 +368,13 @@ class ACO {
 
         // ACS pheromone update
         else {
+          // Global best option (selected by user)
           if(AppState.selectedBest == BestAnt.globalBest){
             if (isEdgeIJInPath(globalShortestPath, i, j+i+1)) {
               updatedPheromones[i][j] += (evaporationRate * 1 / globalShortestLength);
             }
           }
-          // Iteration best option
+          // Iteration best option (selected by user)
           if(AppState.selectedBest == BestAnt.iterationBest){
             if (isEdgeIJInPath(iterationShortestPath, i, j+i+1)) {
               updatedPheromones[i][j] += (evaporationRate * 1 / iterationShortestLength);
@@ -372,6 +388,7 @@ class ACO {
     //printPheromoneConcentration();
   }
 
+  // This function checks if edge i-j is in a solution (= path)
   bool isEdgeIJInPath(path, i, j){
     int city = 0;
     if(path.isNotEmpty) {
@@ -389,11 +406,13 @@ class ACO {
     return false;
   }
 
+  // This function prints an ant solution (list of nodes id) to the console
   printAntsSolution(){
     for(int i=0; i<nbAnts; i++)
       print(ants[i].solution);
   }
 
+  // This function prints pheromone concentrations to the console
   printPheromoneConcentration(){
     for(int i=0; i<pheromoneConcentrations.length; i ++){
       String str = '';
